@@ -5,6 +5,8 @@ namespace AppBundle\Entity;
 use AppBundle\Entity\Answer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 /**
  * Class Article
@@ -14,6 +16,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 final class Article
 {
+    use TimestampableEntity;
+
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -31,7 +35,8 @@ final class Article
     /**
      * @var string
      *
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", unique=true)
+     * @Gedmo\Slug(fields={"title"})
      */
     private $slug;
 
@@ -95,20 +100,6 @@ final class Article
     public function getTitle()
     {
         return $this->title;
-    }
-
-    /**
-     * Set slug
-     *
-     * @param string $slug
-     *
-     * @return Article
-     */
-    public function setSlug($slug)
-    {
-        $this->slug = $slug;
-
-        return $this;
     }
 
     /**
