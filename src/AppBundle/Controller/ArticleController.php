@@ -17,7 +17,7 @@ class ArticleController extends FOSRestController implements ClassResourceInterf
 
     /**
      * Lists all Article entities.
-     * @View()
+     * @View(templateVar="entities")
      */
     public function cgetAction()
     {
@@ -91,7 +91,7 @@ class ArticleController extends FOSRestController implements ClassResourceInterf
 
     /**
      * Finds and displays a Article entity.
-     * @View()
+     * @View(templateVar="entity")
      */
     public function getAction($slug)
     {
@@ -103,12 +103,17 @@ class ArticleController extends FOSRestController implements ClassResourceInterf
             throw $this->createNotFoundException('Unable to find Article.');
         }
 
-        return $entity;
+        $deleteForm = $this->createDeleteForm($entity->getSlug());
+
+        return array(
+            'entity' => $entity,
+            'delete_form' => $deleteForm->createView()
+        );
     }
 
     /**
      * Displays a form to edit an existing Article entity.
-     * @View()
+     * @View(templateVar="entity")
      */
     public function editAction($slug)
     {
@@ -121,7 +126,7 @@ class ArticleController extends FOSRestController implements ClassResourceInterf
         }
 
         $editForm = $this->createEditForm($entity);
-        $deleteForm = $this->createDeleteForm($entity->getId());
+        $deleteForm = $this->createDeleteForm($entity->getSlug());
 
         return array(
             'entity'      => $entity,
@@ -140,7 +145,7 @@ class ArticleController extends FOSRestController implements ClassResourceInterf
     private function createEditForm(Article $entity)
     {
         $form = $this->createForm(new ArticleType(), $entity, array(
-            'action' => $this->generateUrl('put_article', array('id' => $entity->getId())),
+            'action' => $this->generateUrl('put_article', array('slug' => $entity->getSlug())),
             'method' => 'PUT',
         ));
 
@@ -151,26 +156,26 @@ class ArticleController extends FOSRestController implements ClassResourceInterf
 
     /**
      * Edits an existing Article entity.
-     * @View()
+     * @View(templateVar="entity")
      */
-    public function putAction(Request $request, $id)
+    public function putAction(Request $request, $slug)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('AppBundle:Article')->find($id);
+        $entity = $em->getRepository('AppBundle:Article')->findOneBySlug($slug);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Article entity.');
         }
 
-        $deleteForm = $this->createDeleteForm($id);
+        $deleteForm = $this->createDeleteForm($slug);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
             $em->flush();
 
-            return $this->redirect($this->generateUrl('edit_article', array('id' => $id)));
+            return $this->redirect($this->generateUrl('edit_article', array('slug' => $entity->getSlug())));
         }
 
         return array(
