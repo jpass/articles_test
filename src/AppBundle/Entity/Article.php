@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Article
@@ -29,6 +30,7 @@ final class Article
      * @var string
      *
      * @ORM\Column(type="string")
+     * @Assert\NotBlank()
      */
     private $title;
 
@@ -44,6 +46,7 @@ final class Article
      * @var string
      *
      * @ORM\Column(type="text")
+ *     @Assert\NotBlank()
      */
     private $body;
 
