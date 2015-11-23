@@ -1,0 +1,8 @@
+app_articles:
+    type: rest
+    resource: "@AppBundle/Controller/ArticleController.php"
+
+app_answers:
+    type: rest
+    parent: app_articles
+    resource: "@AppBundle/Controller/AnswerController.php"
